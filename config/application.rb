@@ -32,6 +32,9 @@ module RailsReactStudyWebpacker2022
     config.time_zone = "America/Sao_Paulo"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # set ready for ngrok only in development environment
+    config.hosts.clear if Rails.env.development?
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end
