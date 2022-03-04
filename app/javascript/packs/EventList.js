@@ -1,6 +1,5 @@
 import React from 'react'
 import Event from './Event'
-import EventForm from './EventForm'
 
 const EventList = props => (
   
@@ -10,7 +9,6 @@ const EventList = props => (
         return(<Event key={event.id} event={event}/>)
       })
     }
-  <EventForm />
   </div>
 )
 

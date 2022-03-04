@@ -21,11 +21,41 @@ class EventForm extends React.Component {
     this.setState(newState);
   }
 
+  handleSubmit = (e) =>{
+    // Grab the CSRF token from the meta tag
+    const csrfToken = document.querySelector("[name='csrf-token']").content
+
+    fetch("/events", {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": csrfToken, // 👈👈👈 Set the token
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ event: this.state })
+    }).then(response => {
+      //Fail
+      if (!response.ok) { throw response; }
+      return response.json()
+
+    }).then((data) => {
+      //Success
+      this.props.handleNewEvent(data)
+      console.log(data)
+
+    }).catch(error => {
+      //Show error
+      console.error("error", error)
+
+    })
+
+    e.preventDefault();
+  }
+
   render (){
     return (
       <div>
         <h4>Create an event:</h4>
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <input type="text" name="title"    placeholder='Title'    value={this.state.title}    onChange={this.handleInput} />
           <input type="date" name="datetime" placeholder='Date'     value={this.state.datetime} onChange={this.handleInput} />
           <input type="text" name="location" placeholder='Location' value={this.state.location} onChange={this.handleInput} />
