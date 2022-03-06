@@ -3,7 +3,6 @@ import ReactDom from 'react-dom'
 import EventList from './EventList';
 import EventForm from './EventForm'
 
-
 // const Eventlite = props => (
 //   <div>
 //     <EventList events={props.events} />
@@ -17,7 +16,8 @@ class Eventlite extends React.Component{
       events: this.props.events,
       title: '',
       datetime: '',
-      location: ''
+      location: '',
+      formErrors: {}
     }
   }
 
@@ -38,7 +38,6 @@ class Eventlite extends React.Component{
                     location: this.state.location
                    }
     const csrfToken = document.querySelector("[name='csrf-token']").content
-
     fetch("/events", {
       method: "POST",
       headers: {
@@ -47,15 +46,17 @@ class Eventlite extends React.Component{
       },
       body: JSON.stringify({ event: newEvent })
     }).then(response => {
-      //Fail
-      if (!response.ok) { throw response; }
+      if (response.ok) { this.setState({success: true}) }
       return response.json()
 
     }).then((data) => {
-      //Success
-      // this.props.handleNewEvent(data)
-      this.addNewEvent(data)
-      console.log(data)
+      //Success or Validations
+      if(this.state.success){
+        this.addNewEvent(data)
+      }else{
+        this.setState({ formErrors: {title: data.title[0]} })
+        throw data; 
+      }
 
     }).catch(error => {
       //Show error
@@ -76,7 +77,8 @@ class Eventlite extends React.Component{
   render(){
     return(
       <div>
-        <EventForm handleSubmit={this.handleSubmit} 
+        <p> Title { this.state.formErrors.title }</p>
+        <EventForm handleSubmit={this.handleSubmit}
           handleInput={this.handleInput}
           title={this.state.title}
           datetime={this.state.datetime}
