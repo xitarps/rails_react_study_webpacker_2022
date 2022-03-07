@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDom from 'react-dom'
 import EventList from './EventList';
 import EventForm from './EventForm'
+import FormErrors from './FormErrors';
 
 // const Eventlite = props => (
 //   <div>
@@ -17,7 +18,8 @@ class Eventlite extends React.Component{
       title: '',
       datetime: '',
       location: '',
-      formErrors: {}
+      formErrors: {},
+      success: false
     }
   }
 
@@ -46,7 +48,11 @@ class Eventlite extends React.Component{
       },
       body: JSON.stringify({ event: newEvent })
     }).then(response => {
-      if (response.ok) { this.setState({success: true}) }
+
+      if (response.ok) { this.setState({success: true})
+      }else{
+        this.setState({success: false})
+      }
       return response.json()
 
     }).then((data) => {
@@ -54,7 +60,7 @@ class Eventlite extends React.Component{
       if(this.state.success){
         this.addNewEvent(data)
       }else{
-        this.setState({ formErrors: {title: data.title[0]} })
+        this.setState({ formErrors: data })
         throw data; 
       }
 
@@ -77,7 +83,7 @@ class Eventlite extends React.Component{
   render(){
     return(
       <div>
-        <p> Title { this.state.formErrors.title }</p>
+        <FormErrors formErrors = { this.state.formErrors }/>
         <EventForm handleSubmit={this.handleSubmit}
           handleInput={this.handleInput}
           title={this.state.title}
