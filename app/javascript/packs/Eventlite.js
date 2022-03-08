@@ -59,9 +59,10 @@ class Eventlite extends React.Component{
       //Success or Validations
       if(this.state.success){
         this.addNewEvent(data)
+        this.resetFormErrors()
       }else{
         this.setState({ formErrors: data })
-        throw data; 
+        throw data;
       }
 
     }).catch(error => {
@@ -71,6 +72,10 @@ class Eventlite extends React.Component{
     })
 
     e.preventDefault();
+  }
+
+  resetFormErrors(){
+    this.setState({ formErrors: {} })
   }
 
   addNewEvent  = (event) => {
