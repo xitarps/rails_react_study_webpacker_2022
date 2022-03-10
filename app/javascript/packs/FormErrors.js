@@ -8,7 +8,7 @@ function displayErrorsMessages(obj){
         let field   = key[0].toUpperCase() + key.slice(1)
         let message = value[0].toUpperCase() + value.slice(1)
 
-        return(<p class="alert"><strong>{ field}</strong>: { message }</p>);
+        return(<p className="alert"><strong>{ field}</strong>: { message }</p>);
       })
     );
   }));
