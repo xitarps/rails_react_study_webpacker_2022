@@ -15,9 +15,9 @@ class Eventlite extends React.Component{
     super(props)
     this.state = {
       events: this.props.events,
-      title: '',
-      datetime: '',
-      location: '',
+      title: {value: '', valid: false},
+      datetime: {value: '', valid: false},
+      location: {value: '', valid: false},
       formErrors: {},
       success: false,
       formValid: false
@@ -30,25 +30,25 @@ class Eventlite extends React.Component{
     event.preventDefault();
     const name = event.target.name;
     const newState = {};
-    newState[name] = event.target.value;
+    newState[name] = {...this.state[name],value: event.target.value};
     this.setState(newState, this.validateForm);
   }
 
   validateForm() {
     let formErrors = {}
     let formValid = true
-    if(this.state.title.length <= 2) {
+    if(this.state.title.value.length <= 2) {
       formErrors.title = ["is too short (minimum is 3 characters)"]
       formValid = false
     }
-    if(this.state.location.length === 0) {
+    if(this.state.location.value.length === 0) {
       formErrors.location = ["can't be blank"]
       formValid = false
     }
-    if(this.state.datetime.length === 0) {
+    if(this.state.datetime.value.length === 0) {
       formErrors.datetime = ["can't be blank"]
       formValid = false
-    } else if(Date.parse(this.state.datetime) <= Date.now()) {
+    } else if(Date.parse(this.state.datetime.value) <= Date.now()) {
       formErrors.datetime = ["can't be in the past"]
       formValid = false
     }
@@ -57,9 +57,9 @@ class Eventlite extends React.Component{
 
   handleSubmit = (e) =>{
     // Grab the CSRF token from the meta tag
-    let newEvent = {title: this.state.title,
-                    datetime: this.state.datetime,
-                    location: this.state.location
+    let newEvent = {title:    this.state.title.value,
+                    datetime: this.state.datetime.value,
+                    location: this.state.location.value
                    }
     const csrfToken = document.querySelector("[name='csrf-token']").content
     fetch("/events", {
@@ -114,9 +114,9 @@ class Eventlite extends React.Component{
         <EventForm handleSubmit={this.handleSubmit}
           handleInput={this.handleInput}
           formValid={this.state.formValid}
-          title={this.state.title}
-          datetime={this.state.datetime}
-          location={this.state.location}
+          title={this.state.title.value}
+          datetime={this.state.datetime.value}
+          location={this.state.location.value}
         />
         <EventList events={this.state.events} />
       </div>
