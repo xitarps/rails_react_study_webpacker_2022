@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 
+import PropTypes from "prop-types";
+
 import EventList from './EventList';
 import EventForm from './EventForm'
 import FormErrors from './FormErrors';
@@ -134,6 +136,11 @@ class Eventlite extends React.Component{
       </div>
     )
   }
+}
+
+
+Eventlite.propTypes = {
+  events: PropTypes.array.isRequired
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

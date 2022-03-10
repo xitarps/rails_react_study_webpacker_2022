@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function displayErrorsMessages(obj){
   return(Object.keys(obj).map((key)=>{
@@ -19,6 +20,10 @@ const FormErrors = props =>{
       {displayErrorsMessages(props.formErrors)}
     </div>
   )
+}
+
+FormErrors.propTypes = {
+  formErrors: PropTypes.object
 }
 
 
