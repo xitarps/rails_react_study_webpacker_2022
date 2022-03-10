@@ -1,15 +1,11 @@
 import React from 'react'
 import ReactDom from 'react-dom'
+
 import EventList from './EventList';
 import EventForm from './EventForm'
 import FormErrors from './FormErrors';
 
-// const Eventlite = props => (
-//   <div>
-//     <EventList events={props.events} />
-//   </div>
-// );
-
+import validations from '../validations';
 class Eventlite extends React.Component{
   constructor(props){
     super(props)
@@ -24,35 +20,51 @@ class Eventlite extends React.Component{
     }
   }
 
+  static formValidations =  {
+    title: [
+      (value) => { return(validations.checkMinLength(value, 3)) }
+    ],
+    datetime: [
+      (value) => { return(validations.checkMinLength(value, 1)) },
+      (value) => { return(validations.timeShouldBeInTheFuture(value)) }
+    ],
+    location: [
+      (value) => { return(validations.checkMinLength(value, 1)) }
+    ]
+  }
 
-  // handleInput(event) {    with arrow function we avoid the 'bind(this)'
   handleInput = (event) => {
     event.preventDefault();
     const name = event.target.name;
+    const value = event.target.value;
     const newState = {};
-    newState[name] = {...this.state[name],value: event.target.value};
-    this.setState(newState, this.validateForm);
+    newState[name] = {...this.state[name], value: value};
+    this.setState(newState, () => this.validateField(name, value, Eventlite.formValidations[name]));
+  }
+
+  validateField(fieldName, fieldValue, fieldValidations) {
+    let fieldValid = true
+    let errors = fieldValidations.reduce((errors, validation)=>{
+      let [valid, fieldError] = validation(fieldValue);
+      if(!valid){
+        errors = errors.concat(fieldError)
+      }
+      return errors
+    }, [] );
+
+    fieldValue = errors.length === 0;
+
+    const newState = {formErrors: {...this.state.formErrors, [fieldName]: errors}}
+    newState[fieldName] = {...this.state[fieldName], valid: fieldValid}
+
+    this.setState(newState, this.validateForm)
   }
 
   validateForm() {
-    let formErrors = {}
-    let formValid = true
-    if(this.state.title.value.length <= 2) {
-      formErrors.title = ["is too short (minimum is 3 characters)"]
-      formValid = false
-    }
-    if(this.state.location.value.length === 0) {
-      formErrors.location = ["can't be blank"]
-      formValid = false
-    }
-    if(this.state.datetime.value.length === 0) {
-      formErrors.datetime = ["can't be blank"]
-      formValid = false
-    } else if(Date.parse(this.state.datetime.value) <= Date.now()) {
-      formErrors.datetime = ["can't be in the past"]
-      formValid = false
-    }
-    this.setState({formValid: formValid, formErrors: formErrors})
+    this.setState({formValid: this.state.title.valid && 
+                              this.state.datetime.valid &&
+                              this.state.location.valid
+                  })
   }
 
   handleSubmit = (e) =>{
