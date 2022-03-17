@@ -8,7 +8,9 @@ import EventForm from './EventForm'
 import FormErrors from './FormErrors';
 
 import validations from '../validations';
-import { debug } from 'webpack';
+// import { debug } from 'webpack';
+
+import './Eventlite.css'
 class Eventlite extends React.Component{
   constructor(props){
     super(props)
@@ -106,7 +108,7 @@ class Eventlite extends React.Component{
                     location: this.state.location.value
                    }
     // const csrfToken = document.querySelector("[name='csrf-token']").content
-    fetch("/events", {
+    fetch("http://127.0.0.1:3000/events", {
       method: "POST",
       headers: {
         // "X-CSRF-Token": csrfToken, // 👈👈👈 Set the token
