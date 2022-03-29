@@ -3,6 +3,9 @@ import React from 'react'
 class Login extends React.Component {
 
   handleLogin = (e) =>{
+    let token = null;
+    let client = null;
+
     fetch("http://localhost:3000/auth/sign_in", {
       method: "POST",
       headers: {
@@ -13,12 +16,16 @@ class Login extends React.Component {
         password: this.password.value
       })
     }).then(response => {
+      token = response.headers.get('access-token');
+      client = response.headers.get('client');
 
       return response.json();
 
     }).then((data) => {
 
-      console.log(data);
+      const uid = data.data.uid
+      this.persist_login('user',token, client, uid)
+      window.location = '/' // reload to reflect login
 
     }).catch(error => {
 
@@ -26,6 +33,16 @@ class Login extends React.Component {
 
     });
     e.preventDefault();
+  }
+
+  persist_login = (key, token, client, uid)=>{
+    localStorage.setItem(key,
+      JSON.stringify({
+        'access-token': token,
+        'client': client,
+        'uid': uid
+      })
+    );
   }
 
   render () {
